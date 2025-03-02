@@ -7,6 +7,8 @@ typedef struct RockyWM {
     Display* dpy;
     int primary_screen;
     Window root;
+
+    Window focused_window;
 } RockyWM;
 
 RockyWM* create_rocky_wm();
