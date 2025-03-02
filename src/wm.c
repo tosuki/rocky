@@ -5,6 +5,12 @@
 #include <X11/Xlib.h>
 
 #include "wm.h"
+#include "mouse.h"
+
+void panic(char* message) {
+    puts(message);
+    exit(1);
+}
 
 int wm_error_handler(Display* dpy, XErrorEvent* ev) {
     return 0;
@@ -13,6 +19,9 @@ int wm_error_handler(Display* dpy, XErrorEvent* ev) {
 Status wm_run(RockyWM* wm) {
     //send all events of all childs to us xD
     XSelectInput(wm->dpy, wm->root, SubstructureNotifyMask | SubstructureRedirectMask);
+    if (!render_mouse_pointer(wm)) {
+        panic("Failed to render the pointer");
+    }
 
     XEvent xevent;
 
@@ -56,4 +65,10 @@ RockyWM* create_rocky_wm() {
     wm->focused_window = wm->root;
 
     return wm;
+}
+
+void rocky_exit(RockyWM *wm) {
+    if (!XCloseDisplay(wm->dpy)) {
+        panic("Failed to close the display, exitting");
+    }
 }
