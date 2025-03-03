@@ -1,6 +1,6 @@
 all: build/sophix
 
-SRCS= src/main.c
+SRCS= src/main.c src/wm.c src/mouse.c
 
 #output
 BUILD_DIR := build

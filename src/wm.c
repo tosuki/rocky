@@ -13,11 +13,13 @@ void panic(char* message) {
 }
 
 int wm_error_handler(Display* dpy, XErrorEvent* ev) {
+    printf("An X11 error occured: Code %d\n", ev->error_code);
     return 0;
 }
 
-Status wm_run(RockyWM* wm) {
+void wm_run(RockyWM* wm) {
     //send all events of all childs to us xD
+    XSetErrorHandler(wm_error_handler);
     XSelectInput(wm->dpy, wm->root, SubstructureNotifyMask | SubstructureRedirectMask);
     if (!render_mouse_pointer(wm)) {
         panic("Failed to render the pointer");
@@ -31,7 +33,7 @@ Status wm_run(RockyWM* wm) {
 
         switch (xevent.type) {
             case ButtonPress:
-                puts("A button got pressed");
+                handle_button_press(wm, xevent.xbutton);
                 break;
             default:
                 printf("Event of type %d dispatched\n", xevent.type);
@@ -40,25 +42,21 @@ Status wm_run(RockyWM* wm) {
 
         XSync(wm->dpy, 0);
     }
-    return 0;
 }
 
 RockyWM* create_rocky_wm() {
     RockyWM* wm = malloc(sizeof(RockyWM));
 
     if (wm == NULL) {
-        puts("Failed to allocate memory to rocky wm");
-        exit(1);
+        panic("Failed to allocate memory to rocky wm");
     }
 
     wm->dpy = XOpenDisplay(NULL);
     
-    if (wm->dpy) {
-        puts("Failed to open display");
-        exit(1);
+    if (wm->dpy == NULL) {
+        panic("Failed to open display");
     }
 
-    XSetErrorHandler(wm_error_handler);
     wm->root = XDefaultRootWindow(wm->dpy);
     wm->primary_screen = DefaultScreen(wm->dpy);
 

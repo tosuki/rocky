@@ -1,6 +1,10 @@
-#include <stdio.h>
+#include "wm.h"
 
 int main() {
-    printf("Hello world");
+    RockyWM* wm = create_rocky_wm();
+
+    wm_run(wm);
+
+    rocky_exit(wm);
     return 0;
 }

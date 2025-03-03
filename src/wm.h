@@ -12,7 +12,7 @@ typedef struct RockyWM {
 } RockyWM;
 
 RockyWM* create_rocky_wm();
-void rocky_run(RockyWM* wm);
+void wm_run(RockyWM* wm);
 void rocky_exit(RockyWM* wm);
 
 #endif
