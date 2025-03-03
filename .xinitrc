@@ -1,5 +1,5 @@
 #!/bin/bash
 
-exec ./build/rocky &
+exec ./build/main &
 exec xeyes
 
