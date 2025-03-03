@@ -6,6 +6,7 @@
 
 #include "wm.h"
 #include "mouse.h"
+#include "window_node.h"
 
 void panic(char* message) {
     puts(message);
@@ -32,6 +33,10 @@ void wm_run(RockyWM* wm) {
         XNextEvent(wm->dpy, &xevent);
 
         switch (xevent.type) {
+            case MapRequest:
+                puts("A window requested to be mapped");
+                break;
+
             case ButtonPress:
                 handle_button_press(wm, xevent.xbutton);
                 break;
@@ -59,6 +64,7 @@ RockyWM* create_rocky_wm() {
 
     wm->root = XDefaultRootWindow(wm->dpy);
     wm->primary_screen = DefaultScreen(wm->dpy);
+    wm->windows = create_window_collection();
 
     wm->focused_window = wm->root;
 
