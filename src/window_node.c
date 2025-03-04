@@ -46,3 +46,13 @@ WindowNode* get_windownode(WindowNode* tail, Window content_xid) {
 WindowNode* window_collection_get(Windows* windows, Window content_xid) {
     return get_windownode(windows->nodes, content_xid);
 }
+
+WindowNode* window_collection_add(Windows* collection, Window frame_xid, Window content_xid) {
+    if (collection->nodes == NULL) {
+        collection->nodes = create_windownode(frame_xid, content_xid, NULL);
+
+        return collection->nodes;
+    }
+    
+    return collection->nodes = create_windownode(frame_xid, content_xid, collection->nodes);
+}

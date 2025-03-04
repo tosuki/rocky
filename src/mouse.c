@@ -44,6 +44,6 @@ void handle_button_release(RockyWM* wm, XButtonEvent xevent) {
 }
 
 void handle_button_press(RockyWM *wm, XButtonEvent xevent) {
-    puts("A button got pressed, but i dont know which one"); 
+    printf("Button 1 pressed on window %li\n", xevent.window);
     XAllowEvents(wm->dpy, ReplayPointer, CurrentTime);
 }

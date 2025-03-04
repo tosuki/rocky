@@ -7,6 +7,7 @@
 #include "wm.h"
 #include "mouse.h"
 #include "window_node.h"
+#include "window.h"
 
 void panic(char* message) {
     puts(message);
@@ -35,6 +36,7 @@ void wm_run(RockyWM* wm) {
         switch (xevent.type) {
             case MapRequest:
                 puts("A window requested to be mapped");
+                render_window(wm, xevent.xmaprequest);
                 break;
 
             case ButtonPress:
