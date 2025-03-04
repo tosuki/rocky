@@ -53,6 +53,11 @@ Status focus_window(RockyWM *wm, Window window) {
     if (!set_window_border(wm, window, "#484848", True)) {
         return 0;
     };
+    
+    if (!XSetInputFocus(wm->dpy, window, wm->root, CurrentTime)) {
+        printf("Failed to set the input focus to window %li\n", window);
+        return 0;
+    }
 
     return 1;
 }

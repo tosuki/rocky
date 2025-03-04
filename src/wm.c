@@ -8,6 +8,7 @@
 #include "mouse.h"
 #include "window_node.h"
 #include "window.h"
+#include "keyboard.h"
 
 void panic(char* message) {
     puts(message);
@@ -27,6 +28,9 @@ void wm_run(RockyWM* wm) {
         panic("Failed to render the pointer");
     }
 
+    grab_keyboard_keys(wm);
+    XSync(wm->dpy, False);
+
     XEvent xevent;
 
     //event loop
@@ -34,6 +38,9 @@ void wm_run(RockyWM* wm) {
         XNextEvent(wm->dpy, &xevent);
 
         switch (xevent.type) {
+            case KeyPress:
+                handle_keydown(wm, xevent.xkey);
+                break;
             case MapRequest:
                 puts("A window requested to be mapped");
                 render_window(wm, xevent.xmaprequest);
@@ -41,9 +48,6 @@ void wm_run(RockyWM* wm) {
 
             case ButtonPress:
                 handle_button_press(wm, xevent.xbutton);
-                break;
-            default:
-                printf("Event of type %d dispatched\n", xevent.type);
                 break;
         }
 
