@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "window.h"
+#include "mouse.h"
 #include "wm.h"
 
 Status frame_window(RockyWM *wm, Window window) {
@@ -31,9 +32,16 @@ Status frame_window(RockyWM *wm, Window window) {
     window_collection_add(wm->windows, frame_xid, window);
     XMapWindow(wm->dpy, frame_xid);
     XMapWindow(wm->dpy, window);
+
+    return 1;
 }
 
 Status render_window(RockyWM *wm, XMapRequestEvent xevent) {
-    frame_window(wm, xevent.window);
+    if (!frame_window(wm, xevent.window)) {
+        printf("Failed to render window %li\n", xevent.window);
+    }
+
+    grab_button(wm, Button1, xevent.window);
+
     return 1;
 }

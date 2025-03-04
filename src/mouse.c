@@ -34,8 +34,6 @@ Status render_mouse_pointer(RockyWM *wm) {
         return 0;
     }
  
-    grab_button(wm, Button1, wm->root);
-
     return 1;
 }
 
