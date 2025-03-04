@@ -51,6 +51,19 @@ void wm_run(RockyWM* wm) {
     }
 }
 
+//rocky graphical context
+RockyGC* create_rocky_gc(RockyWM* wm) {
+    RockyGC* gc = malloc(sizeof(RockyGC));
+
+    if (gc == NULL) {
+        panic("Failed to allocate memory to rocky gc");
+    }
+
+    gc->default_colormap = DefaultColormap(wm->dpy, wm->primary_screen);
+
+    return gc;
+}
+
 RockyWM* create_rocky_wm() {
     RockyWM* wm = malloc(sizeof(RockyWM));
 
@@ -70,11 +83,18 @@ RockyWM* create_rocky_wm() {
 
     wm->focused_window = wm->root;
 
+    wm->gc = create_rocky_gc(wm);
+
     return wm;
 }
+
 
 void rocky_exit(RockyWM *wm) {
     if (!XCloseDisplay(wm->dpy)) {
         panic("Failed to close the display, exitting");
     }
+
+    free_window_collection(wm->windows);
+    free(wm->gc);
+    free(wm);
 }

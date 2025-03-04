@@ -1,12 +1,18 @@
 #ifndef WM_H
 #define WM_H
 
+#include <X11/X.h>
 #include <X11/Xlib.h>
 
 #include "window_node.h"
 
+typedef struct RockyGC {
+    Colormap default_colormap;
+} RockyGC;
+
 typedef struct RockyWM {
     Display* dpy;
+    RockyGC* gc;
     int primary_screen;
     Window root;
 

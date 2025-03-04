@@ -1,4 +1,5 @@
 #include "mouse.h"
+#include "window.h"
 #include "wm.h"
 
 #include <X11/X.h>
@@ -43,5 +44,11 @@ void handle_button_release(RockyWM* wm, XButtonEvent xevent) {
 
 void handle_button_press(RockyWM *wm, XButtonEvent xevent) {
     printf("Button 1 pressed on window %li\n", xevent.window);
+    printf("Focused window: %li\n", wm->focused_window);
+
+    if (wm->focused_window != xevent.window) {
+        focus_window(wm, xevent.window);
+    }
+
     XAllowEvents(wm->dpy, ReplayPointer, CurrentTime);
 }

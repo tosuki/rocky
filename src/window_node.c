@@ -17,6 +17,19 @@ Windows* create_window_collection() {
     return collection;
 }
 
+void free_window_node(WindowNode* node) {
+    if (node->next != NULL) {
+        free_window_node(node->next);
+    }
+
+    free(node);
+}
+
+void free_window_collection(Windows *windows) {
+    free_window_node(windows->nodes);
+    free(windows);
+}
+
 WindowNode* create_windownode(Window frame, Window content, WindowNode* next) {
     WindowNode* node = malloc(sizeof(WindowNode));
 
