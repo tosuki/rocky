@@ -9,7 +9,7 @@
 
 Status move_window_y(RockyWM* wm, Window window, int offset, XWindowAttributes* attributes) {
     if (!XMoveResizeWindow(wm->dpy, window, attributes->x, attributes->y + offset, attributes->width, attributes->height)) {
-        printf("Failed to move the window %li to %d", window, attributes->y + offset);
+        printf("Failed to move the window %li to %d\n", window, attributes->y + offset);
         return 0;
     }
     return 1;
@@ -24,10 +24,14 @@ Status move_window_x(RockyWM* wm, Window window, int offset, XWindowAttributes* 
 }
 
 Status move_window(RockyWM* wm, Window window, int keycode) {
+    if (wm->root == window) {
+        return 0;
+    }
+
     WindowNode* node = window_collection_get(wm->windows, window);
 
     if (node == NULL) {
-        printf("Attempt to move a non-client window");
+        printf("Attempt to move a non-client window\n");
         return 0;
     }
 
@@ -147,6 +151,7 @@ Status render_window(RockyWM *wm, XMapRequestEvent xevent) {
     }
 
     grab_button(wm, Button1, xevent.window);
-
+    focus_window(wm, xevent.window);
+    
     return 1;
 }

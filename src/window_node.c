@@ -63,9 +63,12 @@ WindowNode* window_collection_get(Windows* windows, Window content_xid) {
 WindowNode* window_collection_add(Windows* collection, Window frame_xid, Window content_xid) {
     if (collection->nodes == NULL) {
         collection->nodes = create_windownode(frame_xid, content_xid, NULL);
-
-        return collection->nodes;
+    } else {
+        collection->nodes = create_windownode(frame_xid, content_xid, collection->nodes);
     }
     
-    return collection->nodes = create_windownode(frame_xid, content_xid, collection->nodes);
+    collection->size += 1;
+    printf("New window added, xid: %li\n", collection->nodes->content);
+
+    return collection->nodes;
 }
