@@ -7,6 +7,55 @@
 #include "window_node.h"
 #include "wm.h"
 
+Status move_window_y(RockyWM* wm, Window window, int offset, XWindowAttributes* attributes) {
+    if (!XMoveResizeWindow(wm->dpy, window, attributes->x, attributes->y + offset, attributes->width, attributes->height)) {
+        printf("Failed to move the window %li to %d", window, attributes->y + offset);
+        return 0;
+    }
+    return 1;
+}
+
+Status move_window_x(RockyWM* wm, Window window, int offset, XWindowAttributes* attributes) {
+    if (!XMoveResizeWindow(wm->dpy, window, attributes->x + offset, attributes->y, attributes->width, attributes->height)) {
+        printf("Failed to move the window %li to %d\n", window, attributes->x + offset);
+        return 0;
+    }
+    return 1;
+}
+
+Status move_window(RockyWM* wm, Window window, int keycode) {
+    WindowNode* node = window_collection_get(wm->windows, window);
+
+    if (node == NULL) {
+        printf("Attempt to move a non-client window");
+        return 0;
+    }
+
+    XWindowAttributes attributes;
+
+    if (!XGetWindowAttributes(wm->dpy, node->frame, &attributes)) {
+        printf("Failed to get the attributes of the frame window %li\n", window);
+        return 0;
+    }
+
+    switch (keycode) {
+        case 111: //Up
+            move_window_y(wm, node->frame, -25, &attributes);
+            break;
+        case 116://Down
+            move_window_y(wm, node->frame, 25, &attributes);
+            break;
+        case 113://left
+            move_window_x(wm, node->frame, -25, &attributes);
+            break;
+        case 114://right
+            move_window_x(wm, node->frame, 25, &attributes);
+            break;
+    }
+
+    return 1;
+}
+
 Status parse_color(RockyWM *wm, char* color_code, XColor* xcolor) {
     if (!XParseColor(wm->dpy, wm->gc->default_colormap,  color_code, xcolor)) {
         printf("Failed to allocate the color %s\n", color_code);
