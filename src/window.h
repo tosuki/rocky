@@ -9,6 +9,7 @@
 #include "wm.h"
 #include <X11/Xlib.h>
 
+Status kill_window(RockyWM* wm, Window window);
 Status focus_window(RockyWM* wm, Window window);
 Status move_window(RockyWM* wm, Window window, int keycode);
 Status render_window(RockyWM* wm, XMapRequestEvent xevent);

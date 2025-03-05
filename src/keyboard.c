@@ -15,8 +15,11 @@ void grab_key(RockyWM* wm, KeySym key_sym, unsigned long mask) {
 
 void handle_modshift_keybinds(RockyWM* wm, XKeyPressedEvent* xevent) {
     switch (xevent->keycode) {
-        case 26: //Alt + Shift + e
+        case 26: //Alt + Shift + e -> exit
             puts("Attempt to exit");
+            break;
+        case 24://Alt + shift + q -> kill window
+            kill_window(wm, wm->focused_window);
             break;
     }
 }
@@ -47,6 +50,7 @@ void handle_keydown(RockyWM* wm, XKeyPressedEvent xevent) {
 
 void grab_keyboard_keys(RockyWM* wm) {
     grab_key(wm, XK_e, Mod1Mask | ShiftMask);
+    grab_key(wm, XK_Q, Mod1Mask | ShiftMask);
     grab_key(wm, XK_Left, Mod1Mask);
     grab_key(wm, XK_Up, Mod1Mask);
     grab_key(wm, XK_Right, Mod1Mask);
