@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void print_colored(const char *message, const char *color);
-void logger_error(char* message);
-void logger_warn(char* message);
-void logger_info(char* message);
+void print_colored(const char* color, const char* format, ...);
+void logger_error(const char* message, ...);
+void logger_warn(const char* message, ...);
+void logger_info(const char* message, ...);
