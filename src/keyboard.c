@@ -6,6 +6,7 @@
 #include "keyboard.h"
 #include "window.h"
 #include "wm.h"
+#include "logger.h"
 
 void grab_key(RockyWM* wm, KeySym key_sym, unsigned long mask) {
     KeyCode key_code = XKeysymToKeycode(wm->dpy, key_sym);
@@ -16,7 +17,7 @@ void grab_key(RockyWM* wm, KeySym key_sym, unsigned long mask) {
 void handle_modshift_keybinds(RockyWM* wm, XKeyPressedEvent* xevent) {
     switch (xevent->keycode) {
         case 26: //Alt + Shift + e -> exit
-            puts("Attempt to exit");
+            logger_info("Attempt to exit");
             break;
         case 24://Alt + shift + q -> kill window
             kill_window(wm, wm->focused_window);

@@ -5,13 +5,15 @@
 #include "window.h"
 #include "mouse.h"
 #include "window_node.h"
+#include "logger.h"
 #include "wm.h"
+
 
 Status unrender_window(RockyWM* wm, Window window) {
     WindowNode* node = window_collection_get(wm->windows, window);
 
     if (node == NULL) {
-        printf("Attempt to unrender non-client window %li\n", window);
+        logger_error("Attempt to render a non-client window %li", window);
         return 0;
     }
 
@@ -49,7 +51,7 @@ Status kill_window(RockyWM* wm, Window window) {
 
 Status move_window_y(RockyWM* wm, Window window, int offset, XWindowAttributes* attributes) {
     if (!XMoveResizeWindow(wm->dpy, window, attributes->x, attributes->y + offset, attributes->width, attributes->height)) {
-        printf("Failed to move the window %li to %d\n", window, attributes->y + offset);
+        logger_error("Failed to move the window %li to %d", window, attributes->y + offset);
         return 0;
     }
     return 1;
@@ -57,7 +59,7 @@ Status move_window_y(RockyWM* wm, Window window, int offset, XWindowAttributes* 
 
 Status move_window_x(RockyWM* wm, Window window, int offset, XWindowAttributes* attributes) {
     if (!XMoveResizeWindow(wm->dpy, window, attributes->x + offset, attributes->y, attributes->width, attributes->height)) {
-        printf("Failed to move the window %li to %d\n", window, attributes->x + offset);
+        logger_error("Failed to move the window %li to %d", window, attributes->x + offset);
         return 0;
     }
     return 1;
@@ -71,14 +73,14 @@ Status move_window(RockyWM* wm, Window window, int keycode) {
     WindowNode* node = window_collection_get(wm->windows, window);
 
     if (node == NULL) {
-        printf("Attempt to move a non-client window\n");
+        logger_error("Attempt to move a non-client window");
         return 0;
     }
 
     XWindowAttributes attributes;
 
     if (!XGetWindowAttributes(wm->dpy, node->frame, &attributes)) {
-        printf("Failed to get the attributes of the frame window %li\n", window);
+        logger_error("Failed to get the attributes of the frame window %li", window);
         return 0;
     }
 
@@ -102,7 +104,7 @@ Status move_window(RockyWM* wm, Window window, int keycode) {
 
 Status parse_color(RockyWM *wm, char* color_code, XColor* xcolor) {
     if (!XParseColor(wm->dpy, wm->gc->default_colormap,  color_code, xcolor)) {
-        printf("Failed to allocate the color %s\n", color_code);
+        logger_error("Failed to allocate the color %s", color_code);
         return 0;
     };
 
@@ -113,19 +115,19 @@ Status set_window_border(RockyWM *wm, Window window, char* border_color, int sho
     WindowNode* node = window_collection_get(wm->windows, window);
 
     if (node == NULL) {
-        printf("Attempt to change the border of a non-client window %li\n", window);
+        logger_error("Attempt to change the border of a non-client window %li\n", window);
         return 0;
     }
 
     XColor border_xcolor;
 
     if (!parse_color(wm, border_color, &border_xcolor)) {
-        printf("Failed to parse the color %s\n", border_color);
+        logger_error("Failed to parse the color %s", border_color);
         return 0;
     }
 
     if (!XSetWindowBorder(wm->dpy, node->frame, border_xcolor.pixel)) {
-        printf("Failed to set the bborder color of window %li to %s\n", window, border_color);
+        logger_error("Failed to set the bborder color of window %li to %s", window, border_color);
         return 0;
     }
 
@@ -148,7 +150,7 @@ Status focus_window(RockyWM *wm, Window window) {
     };
     
     if (!XSetInputFocus(wm->dpy, window, wm->root, CurrentTime)) {
-        printf("Failed to set the input focus to window %li\n", window);
+        logger_error("Failed to set the input focus to window %li", window);
         return 0;
     }
 
@@ -159,7 +161,7 @@ Status frame_window(RockyWM *wm, Window window) {
     XWindowAttributes attributes;
     
     if (!XGetWindowAttributes(wm->dpy, window, &attributes)) {
-        puts("Failed to get the attributes of the window");
+        logger_error("Failed to get the attributes of the window");
 
         return 0;
     }
@@ -187,7 +189,7 @@ Status frame_window(RockyWM *wm, Window window) {
 
 Status render_window(RockyWM *wm, XMapRequestEvent xevent) {
     if (!frame_window(wm, xevent.window)) {
-        printf("Failed to render window %li\n", xevent.window);
+        logger_error("Failed to render window %li", xevent.window);
     }
 
     grab_button(wm, Button1, xevent.window);
