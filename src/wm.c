@@ -9,6 +9,7 @@
 #include "window_node.h"
 #include "window.h"
 #include "keyboard.h"
+#include "logger.h"
 
 void panic(char* message) {
     puts(message);
@@ -16,7 +17,12 @@ void panic(char* message) {
 }
 
 int wm_error_handler(Display* dpy, XErrorEvent* ev) {
-    printf("An X11 error occured: Code %d\n", ev->error_code);
+    printf("Xorg error\nCode: %d\nMinor Code: %d\nResource Id: %li\nRequestCode: %d\n",
+            ev->error_code,
+            ev->minor_code,
+            ev->resourceid,
+            ev->request_code
+            ); 
     return 0;
 }
 
@@ -42,7 +48,7 @@ void wm_run(RockyWM* wm) {
                 handle_keydown(wm, xevent.xkey);
                 break;
             case MapRequest:
-                puts("A window requested to be mapped");
+                logger_info("The window %li requested to be mapped", xevent.xmaprequest.window);
                 render_window(wm, xevent.xmaprequest);
                 break;
 

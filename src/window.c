@@ -9,43 +9,8 @@
 #include "wm.h"
 
 
-Status unrender_window(RockyWM* wm, Window window) {
-    WindowNode* node = window_collection_get(wm->windows, window);
-
-    if (node == NULL) {
-        logger_error("Attempt to render a non-client window %li", window);
-        return 0;
-    }
-
-    XDestroyWindow(wm->dpy, node->frame);
-    XRemoveFromSaveSet(wm->dpy, window);
-    //TO DO: remove window from linkedlist
-
-    return 1;
-}
-
-Status force_window_exit(RockyWM* wm, Window window) {
-    XKillClient(wm->dpy, window);
-    XFlush(wm->dpy);
-}
-
 Status kill_window(RockyWM* wm, Window window) {
-    Atom delete_atom = XInternAtom(wm->dpy, "WM_DELETE_WINDOW", True);
-
-    if (delete_atom == None) {
-        return force_window_exit(wm, window);
-    }
-
-    XEvent event = { 0 };
-    event.xclient.type = ClientMessage;
-    event.xclient.message_type = XInternAtom(wm->dpy, "WM_PROTOCOLS", True);
-    event.xclient.format = 32;
-    event.xclient.data.l[0] = delete_atom;
-    event.xclient.window = window;
-
-    XSendEvent(wm->dpy, window, False, NoEventMask, &event);
-    XFlush(wm->dpy);
-
+    printf("Attempt to kill a window");
     return 0;
 }
 
@@ -148,9 +113,9 @@ Status focus_window(RockyWM *wm, Window window) {
     if (!set_window_border(wm, window, "#484848", True)) {
         return 0;
     };
-    
-    if (!XSetInputFocus(wm->dpy, window, wm->root, CurrentTime)) {
-        logger_error("Failed to set the input focus to window %li", window);
+   
+    if (!XSetInputFocus(wm->dpy, window, RevertToPointerRoot, CurrentTime)) {
+        logger_error("Failed to change the input focus to the window %li", window);
         return 0;
     }
 
