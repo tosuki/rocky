@@ -8,10 +8,66 @@
 #include "logger.h"
 #include "wm.h"
 
+Status unrender_window(RockyWM* wm, Window window) {
+    WindowNode* node = window_collection_get(wm->windows, window);
+    
+    if (node == NULL) {
+        logger_error("Attempt to kill a non-client window %li", window);
+        return 0;
+    }
+
+    XRemoveFromSaveSet(wm->dpy, window);
+    XUnmapWindow(wm->dpy, window);
+    XDestroyWindow(wm->dpy, node->frame);
+    window_collection_delete(wm->windows, window);
+
+    return 1;
+}
+
+Status send_kill_event(RockyWM* wm, Window window) {
+    //kill window gracefully
+    Atom wm_delete_atom = XInternAtom(wm->dpy, "WM_DELETE_WINDOW", True);
+    
+    if (!wm_delete_atom) {
+        return 0;
+    }
+    
+    XEvent event = {0};
+
+    event.xclient.type = ClientMessage;
+    event.xclient.message_type = XInternAtom(wm->dpy, "WM_PROTOCOLS", True);
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = wm_delete_atom;
+    event.xclient.window = window;
+
+    if (!XSendEvent(wm->dpy, window, False, NoEventMask, &event)) {
+        logger_error("Failed to send a WM_DELETE_WINDOW atom to the window %li", window);
+        return 0;
+    }
+    
+    XFlush(wm->dpy);  
+    return 1;
+}
 
 Status kill_window(RockyWM* wm, Window window) {
-    printf("Attempt to kill a window");
-    return 0;
+    if (wm->focused_window == wm->root) {
+        logger_error("Attempt to kill the root window");
+        return 0;
+    }
+    
+    if (!unrender_window(wm, window)) {
+        logger_error("Failed to unrender the window %li", window);
+        return 0;
+    }
+
+    if (!send_kill_event(wm, window)) {
+        logger_warn("Due to failure on killing window in a graceful way, kicking it out in an aggressive way");
+        XKillClient(wm->dpy, window);
+    }
+
+    wm->focused_window = wm->root;
+
+    return 1;
 }
 
 Status move_window_y(RockyWM* wm, Window window, int offset, XWindowAttributes* attributes) {
