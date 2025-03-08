@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -33,6 +32,10 @@ void handle_mod_keybinds(RockyWM* wm, XKeyPressedEvent* xevent) {
         case 113://left
             move_window(wm, wm->focused_window, xevent->keycode);
             break;
+        case 23: //Tab
+            logger_info("Switching to the next window");
+            focus_next(wm);
+            break;
     }
 }
 
@@ -56,4 +59,5 @@ void grab_keyboard_keys(RockyWM* wm) {
     grab_key(wm, XK_Up, Mod1Mask);
     grab_key(wm, XK_Right, Mod1Mask);
     grab_key(wm, XK_Down, Mod1Mask);
+    grab_key(wm, XK_Tab, Mod1Mask);
 }

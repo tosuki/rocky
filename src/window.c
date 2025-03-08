@@ -159,7 +159,6 @@ Status set_window_border(RockyWM *wm, Window window, char* border_color, int sho
     return 1;
 }
 
-
 Status focus_window(RockyWM *wm, Window window) {
     if (wm->focused_window != wm->root && !set_window_border(wm, wm->focused_window, "#181818", False)) {
         return 0;
@@ -176,6 +175,29 @@ Status focus_window(RockyWM *wm, Window window) {
     }
 
     return 1;
+}
+
+Status focus_next(RockyWM* wm) {
+    if (wm->windows->size < 2) {
+        return 1;
+    }
+
+    if (wm->focused_window == wm->root) {
+        return focus_window(wm, wm->windows->nodes->content);
+    }
+
+    WindowNode* node = window_collection_get(wm->windows, wm->focused_window);
+
+    if (node == NULL) {
+        logger_error("Failed to get the focused window node, received NULL");
+        return 0;
+    }
+
+    if (node->next != NULL) {
+        return focus_window(wm, node->next->content);
+    }
+
+    return focus_window(wm, wm->windows->nodes->content);
 }
 
 Status frame_window(RockyWM *wm, Window window) {
