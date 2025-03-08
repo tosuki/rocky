@@ -17,6 +17,14 @@ void panic(char* message) {
 }
 
 int wm_error_handler(Display* dpy, XErrorEvent* ev) {
+    if (
+            ev->error_code == BadWindow ||
+            ev->error_code == BadMatch ||
+            ev->error_code == BadDrawable ||
+            ev->error_code == BadAccess
+       ) {
+        return 0;
+    }
     printf("Xorg error\nCode: %d\nMinor Code: %d\nResource Id: %li\nRequestCode: %d\n",
             ev->error_code,
             ev->minor_code,
